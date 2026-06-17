@@ -1,5 +1,5 @@
--- V11 PREMIUM ELEMENTAL AURA
-print("=== V11 PREMIUM START ===")
+-- V11.1 PREMIUM AURA - CORRIGE
+print("=== V11.1 START ===")
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -7,96 +7,17 @@ local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 
 local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local rootPart = character:WaitForChild("HumanoidRootPart")
-
-print("Personnage chargé")
-
-local isAuraActive = false
-local currentElement = "Fire"
-local isMinimized = false
-
-local effectsFolder = Instance.new("Folder")
-effectsFolder.Name = "AuraEffects"
-effectsFolder.Parent = rootPart
-
-local function createParticle(texture, rate, speed, size, color, parent)
-    local p = Instance.new("ParticleEmitter")
-    p.Texture = texture
-    p.Rate = rate
-    p.Lifetime = NumberRange.new(1, 2)
-    p.Speed = speed
-    p.SpreadAngle = Vector2.new(180, 180)
-    p.Size = size
-    p.Transparency = NumberSequence.new(0, 0.5, 1)
-    p.Rotation = NumberRange.new(0, 360)
-    p.RotSpeed = NumberRange.new(-100, 100)
-    p.Color = color
-    p.Parent = parent
-    return p
+if not player then 
+    print("ERREUR: Pas de joueur")
+    return 
 end
 
-local att1 = Instance.new("Attachment")
-att1.Position = Vector3.new(0, 1, 0)
-att1.Parent = rootPart
-
-local att2 = Instance.new("Attachment")
-att2.Position = Vector3.new(0, 0, 0)
-att2.Parent = rootPart
-
-local att3 = Instance.new("Attachment")
-att3.Position = Vector3.new(0, -1, 0)
-att3.Parent = rootPart
-local particles = {}
-local light = Instance.new("PointLight")
-light.Range = 30
-light.Brightness = 3
-light.Parent = rootPart
-
-local mesh = Instance.new("SpecialMesh")
-mesh.MeshType = Enum.MeshType.Sphere
-mesh.Parent = rootPart
-mesh.Scale = Vector3.new(0, 0, 0)
-
-local elements = {
-    Fire = {
-        name = "FEU",
-        color1 = ColorSequence.new(Color3.fromRGB(255, 0, 0), Color3.fromRGB(255, 100, 0)),
-        color2 = ColorSequence.new(Color3.fromRGB(255, 200, 0), Color3.fromRGB(255, 50, 0)),
-        lightColor = Color3.fromRGB(255, 80, 0),
-        rate = 200,
-        speed = NumberRange.new(10, 20)
-    },
-    Ice = {
-        name = "GLACE",
-        color1 = ColorSequence.new(Color3.fromRGB(0, 150, 255), Color3.fromRGB(200, 240, 255)),
-        color2 = ColorSequence.new(Color3.fromRGB(100, 220, 255), Color3.fromRGB(255, 255, 255)),
-        lightColor = Color3.fromRGB(100, 200, 255),
-        rate = 150,
-        speed = NumberRange.new(3, 8)
-    },
-    Void = {
-        name = "VIDE",
-        color1 = ColorSequence.new(Color3.fromRGB(100, 0, 200), Color3.fromRGB(50, 0, 100)),
-        color2 = ColorSequence.new(Color3.fromRGB(200, 0, 255), Color3.fromRGB(100, 0, 200)),
-        lightColor = Color3.fromRGB(150, 0, 255),
-        rate = 180,
-        speed = NumberRange.new(5, 15)
-    },
-    Gold = {
-        name = "OR",
-        color1 = ColorSequence.new(Color3.fromRGB(255, 215, 0), Color3.fromRGB(255, 255, 200)),
-        color2 = ColorSequence.new(Color3.fromRGB(255, 200, 100), Color3.fromRGB(255, 255, 150)),
-        lightColor = Color3.fromRGB(255, 200, 50),
-        rate = 160,
-        speed = NumberRange.new(6, 12)
-    }
-}
-
+-- 1. CREATION DE L'INTERFACE IMMEDIATEMENT
 local ui = Instance.new("ScreenGui")
 ui.Name = "PremiumAuraV11"
 ui.ResetOnSpawn = false
-ui.ZIndexBehavior = Enum.ZIndexBehavior.Siblingui.IgnoreGuiInset = true
+ui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ui.IgnoreGuiInset = true
 ui.DisplayOrder = 999999
 ui.Parent = player:WaitForChild("PlayerGui")
 
@@ -127,7 +48,6 @@ header.Parent = main
 local headerCorner = Instance.new("UICorner")
 headerCorner.CornerRadius = UDim.new(0, 12)
 headerCorner.Parent = header
-
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, -50, 1, 0)
 title.Position = UDim2.new(0, 12, 0, 0)
@@ -145,7 +65,8 @@ minimizeBtn.Position = UDim2.new(1, -35, 0, 0)
 minimizeBtn.BackgroundTransparency = 1
 minimizeBtn.Text = "-"
 minimizeBtn.TextColor3 = Color3.fromRGB(150, 150, 160)
-minimizeBtn.Font = Enum.Font.GothamBoldminimizeBtn.TextSize = 18
+minimizeBtn.Font = Enum.Font.GothamBold
+minimizeBtn.TextSize = 18
 minimizeBtn.Parent = header
 
 local content = Instance.new("Frame")
@@ -175,8 +96,7 @@ toggleStroke.Parent = toggleBtn
 
 local buttonGrid = Instance.new("Frame")
 buttonGrid.Size = UDim2.new(0.9, 0, 0, 110)
-buttonGrid.Position = UDim2.new(0.05, 0, 0, 60)
-buttonGrid.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+buttonGrid.Position = UDim2.new(0.05, 0, 0, 60)buttonGrid.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
 buttonGrid.BorderSizePixel = 0
 buttonGrid.Parent = content
 
@@ -185,8 +105,6 @@ gridCorner.CornerRadius = UDim.new(0, 8)
 gridCorner.Parent = buttonGrid
 
 local gridLayout = Instance.new("UIGridLayout")
-gridLayout.Size = UDim2.new(1, -10, 1, -10)
-gridLayout.Position = UDim2.new(0, 5, 0, 5)
 gridLayout.CellSize = UDim2.new(0, 105, 0, 45)
 gridLayout.CellPadding = UDim2.new(0, 5, 0, 5)
 gridLayout.SortOrder = Enum.SortOrder.LayoutOrder
@@ -194,7 +112,8 @@ gridLayout.Parent = buttonGrid
 
 local function createElementButton(name, color, order)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, 0, 1, 0)    btn.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+    btn.Size = UDim2.new(1, 0, 1, 0)
+    btn.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
     btn.Text = name
     btn.TextColor3 = Color3.fromRGB(180, 180, 190)
     btn.Font = Enum.Font.GothamBold
@@ -212,20 +131,6 @@ local function createElementButton(name, color, order)
     btnStroke.Transparency = 0.7
     btnStroke.Parent = btn
     
-    btn.MouseEnter:Connect(function()
-        TweenService:Create(btn, TweenInfo.new(0.2), {
-            BackgroundColor3 = Color3.fromRGB(45, 45, 60)
-        }):Play()
-    end)
-    
-    btn.MouseLeave:Connect(function()
-        if currentElement ~= name then
-            TweenService:Create(btn, TweenInfo.new(0.2), {
-                BackgroundColor3 = Color3.fromRGB(35, 35, 45)
-            }):Play()
-        end
-    end)
-    
     return btn
 end
 
@@ -238,13 +143,144 @@ local statusLabel = Instance.new("TextLabel")
 statusLabel.Size = UDim2.new(1, 0, 0, 25)
 statusLabel.Position = UDim2.new(0, 0, 1, -25)
 statusLabel.BackgroundTransparency = 1
-statusLabel.Text = "PRET"
-statusLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
-statusLabel.Font = Enum.Font.GothamBold
-statusLabel.TextSize = 10
+statusLabel.Text = "CHARGEMENT..."
+statusLabel.TextColor3 = Color3.fromRGB(255, 200, 0)
+statusLabel.Font = Enum.Font.GothamBoldstatusLabel.TextSize = 10
 statusLabel.Parent = main
-print("Interface premium créée")
 
+print("Interface créée")
+
+-- 2. VARIABLES
+local isAuraActive = false
+local currentElement = "Fire"
+local isMinimized = false
+local character, rootPart
+
+-- 3. EFFETS
+local effectsFolder
+local particles = {}
+local light
+local mesh
+
+local function createParticle(texture, rate, speed, size, color, parent)
+    local p = Instance.new("ParticleEmitter")
+    p.Texture = texture
+    p.Rate = rate
+    p.Lifetime = NumberRange.new(1, 2)
+    p.Speed = speed
+    p.SpreadAngle = Vector2.new(180, 180)
+    p.Size = size
+    p.Transparency = NumberSequence.new(0, 0.5, 1)
+    p.Rotation = NumberRange.new(0, 360)
+    p.RotSpeed = NumberRange.new(-100, 100)
+    p.Color = color
+    p.Parent = parent
+    return p
+end
+
+local elements = {
+    Fire = {
+        name = "FEU",
+        color1 = ColorSequence.new(Color3.fromRGB(255, 0, 0), Color3.fromRGB(255, 100, 0)),
+        color2 = ColorSequence.new(Color3.fromRGB(255, 200, 0), Color3.fromRGB(255, 50, 0)),
+        lightColor = Color3.fromRGB(255, 80, 0),
+        rate = 200,
+        speed = NumberRange.new(10, 20)
+    },
+    Ice = {
+        name = "GLACE",
+        color1 = ColorSequence.new(Color3.fromRGB(0, 150, 255), Color3.fromRGB(200, 240, 255)),
+        color2 = ColorSequence.new(Color3.fromRGB(100, 220, 255), Color3.fromRGB(255, 255, 255)),
+        lightColor = Color3.fromRGB(100, 200, 255),
+        rate = 150,
+        speed = NumberRange.new(3, 8)
+    },    Void = {
+        name = "VIDE",
+        color1 = ColorSequence.new(Color3.fromRGB(100, 0, 200), Color3.fromRGB(50, 0, 100)),
+        color2 = ColorSequence.new(Color3.fromRGB(200, 0, 255), Color3.fromRGB(100, 0, 200)),
+        lightColor = Color3.fromRGB(150, 0, 255),
+        rate = 180,
+        speed = NumberRange.new(5, 15)
+    },
+    Gold = {
+        name = "OR",
+        color1 = ColorSequence.new(Color3.fromRGB(255, 215, 0), Color3.fromRGB(255, 255, 200)),
+        color2 = ColorSequence.new(Color3.fromRGB(255, 200, 100), Color3.fromRGB(255, 255, 150)),
+        lightColor = Color3.fromRGB(255, 200, 50),
+        rate = 160,
+        speed = NumberRange.new(6, 12)
+    }
+}
+
+-- 4. FONCTION POUR ATTACHER LES EFFETS AU PERSONNAGE
+local function attachEffects(char)
+    if not char then return end
+    rootPart = char:FindFirstChild("HumanoidRootPart")
+    if not rootPart then return end
+    
+    character = char
+    
+    -- Nettoyer anciens effets
+    if effectsFolder then effectsFolder:Destroy() end
+    for _, p in pairs(particles) do p:Destroy() end
+    particles = {}
+    
+    effectsFolder = Instance.new("Folder")
+    effectsFolder.Name = "AuraEffects"
+    effectsFolder.Parent = rootPart
+    
+    local att1 = Instance.new("Attachment")
+    att1.Position = Vector3.new(0, 1, 0)
+    att1.Parent = rootPart
+    
+    local att2 = Instance.new("Attachment")
+    att2.Position = Vector3.new(0, 0, 0)
+    att2.Parent = rootPart
+    
+    local att3 = Instance.new("Attachment")
+    att3.Position = Vector3.new(0, -1, 0)
+    att3.Parent = rootPart
+    
+    light = Instance.new("PointLight")
+    light.Range = 30
+    light.Brightness = 3    light.Parent = rootPart
+    
+    mesh = Instance.new("SpecialMesh")
+    mesh.MeshType = Enum.MeshType.Sphere
+    mesh.Parent = rootPart
+    mesh.Scale = Vector3.new(0, 0, 0)
+    
+    -- Appliquer l'élément actuel
+    local config = elements[currentElement]
+    particles[1] = createParticle("rbxassetid://241876428", config.rate/2, config.speed, NumberSequence.new(3, 5), config.color1, att1)
+    particles[2] = createParticle("rbxassetid://241876428", config.rate/3, NumberRange.new(config.speed.Min/2, config.speed.Max/2), NumberSequence.new(2, 4), config.color2, att2)
+    particles[3] = createParticle("rbxassetid://241876428", config.rate/4, config.speed, NumberSequence.new(4, 6), config.color1, att3)
+    
+    light.Color = config.lightColor
+    
+    if isAuraActive then
+        for _, p in pairs(particles) do p.Enabled = true end
+        light.Enabled = true
+    end
+    
+    statusLabel.Text = "PRET"
+    statusLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
+    print("Effets attachés au personnage")
+end
+
+-- 5. CONNEXION AU PERSONNAGE
+local function onCharacterAdded(char)
+    task.wait(0.5)
+    attachEffects(char)
+end
+
+player.CharacterAdded:Connect(onCharacterAdded)
+
+if player.Character then
+    onCharacterAdded(player.Character)
+end
+
+-- 6. DRAG
 local dragging = false
 local dragStart, startPos
 header.InputBegan:Connect(function(input)
@@ -256,8 +292,7 @@ header.InputBegan:Connect(function(input)
 end)
 header.InputEnded:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        dragging = false
-    end
+        dragging = false    end
 end)
 UserInputService.InputChanged:Connect(function(input)
     if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
@@ -269,6 +304,7 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
+-- 7. MINIMIZE
 minimizeBtn.MouseButton1Click:Connect(function()
     isMinimized = not isMinimized
     if isMinimized then
@@ -284,29 +320,28 @@ minimizeBtn.MouseButton1Click:Connect(function()
     end
 end)
 
+-- 8. APPLY ELEMENT
 local function applyElement(name)
     currentElement = name
     local config = elements[name]
     
-    for _, p in pairs(particles) do
-        p:Destroy()
-    end
+    for _, p in pairs(particles) do p:Destroy() end
     particles = {}
-        particles[1] = createParticle("rbxassetid://241876428", config.rate/2, config.speed, NumberSequence.new(3, 5), config.color1, att1)
-    particles[2] = createParticle("rbxassetid://241876428", config.rate/3, NumberRange.new(config.speed.Min/2, config.speed.Max/2), NumberSequence.new(2, 4), config.color2, att2)
-    particles[3] = createParticle("rbxassetid://241876428", config.rate/4, config.speed, NumberSequence.new(4, 6), config.color1, att3)
     
-    light.Color = config.lightColor
+    if not rootPart then return end
+    
+    local att1 = rootPart:FindFirstChildOfClass("Attachment")
+    if not att1 then return end
+    
+    particles[1] = createParticle("rbxassetid://241876428", config.rate/2, config.speed, NumberSequence.new(3, 5), config.color1, att1)
+    
+    if light then light.Color = config.lightColor end
     
     if isAuraActive then
-        for _, p in pairs(particles) do
-            p.Enabled = true
-        end
-        light.Enabled = true
+        for _, p in pairs(particles) do p.Enabled = true end
     end
     
-    for _, btn in pairs({fireBtn, iceBtn, voidBtn, goldBtn}) do
-        btn.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+    for _, btn in pairs({fireBtn, iceBtn, voidBtn, goldBtn}) do        btn.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
         btn.TextColor3 = Color3.fromRGB(180, 180, 190)
     end
     
@@ -327,54 +362,55 @@ local function applyElement(name)
     statusLabel.Text = config.name
 end
 
+-- 9. TOGGLE
 toggleBtn.MouseButton1Click:Connect(function()
     isAuraActive = not isAuraActive
     
     if isAuraActive then
-        toggleBtn.Text = "DESACTIVER L'AURA"
+        toggleBtn.Text = "DESACTIVER"
         toggleBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 150)
         toggleBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
         toggleStroke.Color = Color3.fromRGB(0, 255, 150)
         
-        for _, p in pairs(particles) do
-            p.Enabled = true
-        end
-        light.Enabled = true
+        for _, p in pairs(particles) do p.Enabled = true end
+        if light then light.Enabled = true end
         
-        TweenService:Create(mesh, TweenInfo.new(1, Enum.EasingStyle.Elastic), {            Scale = Vector3.new(3, 3, 3)
-        }):Play()
+        if mesh then
+            TweenService:Create(mesh, TweenInfo.new(1, Enum.EasingStyle.Elastic), {
+                Scale = Vector3.new(3, 3, 3)
+            }):Play()
+        end
         
         statusLabel.Text = "ACTIVE - " .. elements[currentElement].name
     else
-        toggleBtn.Text = "ACTIVER L'AURA"
+        toggleBtn.Text = "ACTIVER"
         toggleBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
         toggleBtn.TextColor3 = Color3.fromRGB(180, 180, 190)
         toggleStroke.Color = Color3.fromRGB(60, 60, 70)
         
-        for _, p in pairs(particles) do
-            p.Enabled = false
+        for _, p in pairs(particles) do p.Enabled = false end
+        if light then light.Enabled = false end
+                if mesh then
+            TweenService:Create(mesh, TweenInfo.new(0.5), {
+                Scale = Vector3.new(0, 0, 0)
+            }):Play()
         end
-        light.Enabled = false
-        
-        TweenService:Create(mesh, TweenInfo.new(0.5), {
-            Scale = Vector3.new(0, 0, 0)
-        }):Play()
         
         statusLabel.Text = "INACTIVE"
     end
 end)
 
+-- 10. BOUTONS ELEMENTS
 fireBtn.MouseButton1Click:Connect(function() applyElement("Fire") end)
 iceBtn.MouseButton1Click:Connect(function() applyElement("Ice") end)
 voidBtn.MouseButton1Click:Connect(function() applyElement("Void") end)
 goldBtn.MouseButton1Click:Connect(function() applyElement("Gold") end)
 
+-- 11. ROTATION MESH
 RunService.RenderStepped:Connect(function()
-    if isAuraActive then
+    if isAuraActive and mesh then
         mesh.Rotation = mesh.Rotation + Vector3.new(0, 2, 0)
     end
 end)
 
-applyElement("Fire")
-
-print("=== V11 PREMIUM READY ===")
+print("=== V11.1 READY ===")
