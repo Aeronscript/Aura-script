@@ -1,4 +1,4 @@
--- gui.lua - VERSION CORRIGEE
+-- gui.lua - VERSION FINALE MOBILE
 print("=== GUI LOADING ===")
 
 local Players = game:GetService("Players")
@@ -13,7 +13,18 @@ ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.DisplayOrder = 999999
 ScreenGui.Parent = player:WaitForChild("PlayerGui")
 
-print("ScreenGui créé")
+-- Bouton de réouverture (Caché au début)
+local ReopenBtn = Instance.new("TextButton")
+ReopenBtn.Size = UDim2.new(0, 50, 0, 50)
+ReopenBtn.Position = UDim2.new(0, 20, 0, 20)
+ReopenBtn.BackgroundColor3 = Color3.fromRGB(138, 43, 226)
+ReopenBtn.Text = "⚡"
+ReopenBtn.TextColor3 = Color3.new(1, 1, 1)
+ReopenBtn.Font = Enum.Font.GothamBold
+ReopenBtn.TextSize = 24
+ReopenBtn.Visible = false -- CACHÉ AU DÉPART
+ReopenBtn.Parent = ScreenGui
+Instance.new("UICorner", ReopenBtn).CornerRadius = UDim.new(0, 10)
 
 -- Main Frame
 local MainFrame = Instance.new("Frame")
@@ -21,6 +32,7 @@ MainFrame.Size = UDim2.new(0, 300, 0, 280)
 MainFrame.Position = UDim2.new(0, 100, 0, 100)
 MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
 MainFrame.BorderSizePixel = 0
+MainFrame.Active = true -- EMPÊCHE LA CAMÉRA DE BOUGER QUAND ON TOUCHE LE GUI
 MainFrame.Parent = ScreenGui
 
 local MainCorner = Instance.new("UICorner")
@@ -32,13 +44,10 @@ MainStroke.Color = Color3.fromRGB(138, 43, 226)
 MainStroke.Thickness = 2
 MainStroke.Parent = MainFrame
 
-print("MainFrame créé")
-
 -- Header
 local Header = Instance.new("Frame")
 Header.Size = UDim2.new(1, 0, 0, 50)
-Header.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
-Header.BorderSizePixel = 0
+Header.BackgroundColor3 = Color3.fromRGB(35, 35, 40)Header.BorderSizePixel = 0
 Header.Parent = MainFrame
 
 local HeaderCorner = Instance.new("UICorner")
@@ -63,10 +72,7 @@ CloseBtn.Position = UDim2.new(1, -45, 0, 5)
 CloseBtn.BackgroundColor3 = Color3.fromRGB(220, 53, 69)
 CloseBtn.Text = ""
 CloseBtn.Parent = Header
-
-local CloseCorner = Instance.new("UICorner")
-CloseCorner.CornerRadius = UDim.new(0, 8)
-CloseCorner.Parent = CloseBtn
+Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(0, 8)
 
 local XLabel = Instance.new("TextLabel")
 XLabel.Size = UDim2.new(1, 0, 1, 0)
@@ -90,14 +96,10 @@ ToggleBtn.Size = UDim2.new(0.9, 0, 0, 50)
 ToggleBtn.Position = UDim2.new(0.05, 0, 0, 15)
 ToggleBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
 ToggleBtn.Text = "ACTIVER"
-ToggleBtn.TextColor3 = Color3.new(1, 1, 1)
-ToggleBtn.Font = Enum.Font.GothamBold
+ToggleBtn.TextColor3 = Color3.new(1, 1, 1)ToggleBtn.Font = Enum.Font.GothamBold
 ToggleBtn.TextSize = 16
 ToggleBtn.Parent = Content
-
-local ToggleCorner = Instance.new("UICorner")
-ToggleCorner.CornerRadius = UDim.new(0, 8)
-ToggleCorner.Parent = ToggleBtn
+Instance.new("UICorner", ToggleBtn).CornerRadius = UDim.new(0, 8)
 
 -- Element Buttons
 local FireBtn = Instance.new("TextButton")
@@ -143,7 +145,6 @@ GoldBtn.Font = Enum.Font.GothamBold
 GoldBtn.TextSize = 13
 GoldBtn.Parent = Content
 Instance.new("UICorner", GoldBtn).CornerRadius = UDim.new(0, 8)
-
 -- Status Label
 local StatusLabel = Instance.new("TextLabel")
 StatusLabel.Size = UDim2.new(1, 0, 0, 30)
@@ -157,26 +158,32 @@ StatusLabel.Parent = MainFrame
 
 print("GUI elements créés")
 
--- Drag System
+-- SYSTÈME DE DRAG OPTIMISÉ POUR MOBILE (Empêche la caméra de bouger)
 local dragging = false
-local dragStart, startPos
+local dragInput, dragStart, startPos
 
 Header.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
         dragging = true
         dragStart = input.Position
         startPos = MainFrame.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
     end
 end)
 
-Header.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        dragging = false
+Header.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
     end
 end)
 
 UserInputService.InputChanged:Connect(function(input)
-    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+    if input == dragInput and dragging then
         local delta = input.Position - dragStart
         MainFrame.Position = UDim2.new(
             startPos.X.Scale, startPos.X.Offset + delta.X,
@@ -185,9 +192,14 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
--- Close/Reopen
+-- LOGIQUE CLOSE / REOPEN CORRIGÉE
 CloseBtn.MouseButton1Click:Connect(function()
-    MainFrame.Visible = false
+    MainFrame.Visible = false    ReopenBtn.Visible = true -- Affiche l'icône
+end)
+
+ReopenBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = true
+    ReopenBtn.Visible = false -- Cache l'icône
 end)
 
 print("=== GUI LOADED ===")
