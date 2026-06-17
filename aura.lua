@@ -1,121 +1,180 @@
 
--- V12 AURA COMPLETE - 4 ELEMENTS + MINIMIZE
-print("=== START V12 ===")
+-- V13 INTERFACE PREMIUM + DRAG + CLOSE
+print("=== START V13 ===")
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
 if not player then return end
-print("1. Player OK")
 
 -- GUI
 local ui = Instance.new("ScreenGui")
-ui.Name = "AuraV12"
+ui.Name = "AuraV13"
 ui.ResetOnSpawn = false
+ui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ui.IgnoreGuiInset = true
+ui.DisplayOrder = 999999
 ui.Parent = player:WaitForChild("PlayerGui")
 
-local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 250, 0, 220)
-main.Position = UDim2.new(1, -270, 0, 20)
-main.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-main.Parent = ui
-Instance.new("UICorner", main).CornerRadius = UDim.new(0, 10)
+-- BOUTON FLOTTANT (Pour rouvrir)
+local reopenBtn = Instance.new("TextButton")
+reopenBtn.Size = UDim2.new(0, 50, 0, 50)
+reopenBtn.Position = UDim2.new(0, 20, 0, 20)
+reopenBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 200)
+reopenBtn.Text = "⚡"
+reopenBtn.TextColor3 = Color3.new(0, 0, 0)
+reopenBtn.Font = Enum.Font.GothamBold
+reopenBtn.TextSize = 24
+reopenBtn.Visible = false
+reopenBtn.Parent = ui
+Instance.new("UICorner", reopenBtn).CornerRadius = UDim.new(1, 0)
+Instance.new("UIStroke", reopenBtn).Color = Color3.fromRGB(255, 255, 255)
 
+-- MENU PRINCIPAL
+local main = Instance.new("Frame")
+main.Size = UDim2.new(0, 280, 0, 240)
+main.Position = UDim2.new(0, 20, 0, 80)
+main.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+main.BackgroundTransparency = 0.1
+main.BorderSizePixel = 0
+main.Parent = ui
+
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 12)
+mainCorner.Parent = main
+
+local mainStroke = Instance.new("UIStroke")
+mainStroke.Color = Color3.fromRGB(0, 255, 200)
+mainStroke.Thickness = 2
+mainStroke.Transparency = 0.3
+mainStroke.Parent = main
+-- HEADER DRAGGABLE
 local header = Instance.new("Frame")
-header.Size = UDim2.new(1, 0, 0, 35)
-header.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+header.Size = UDim2.new(1, 0, 0, 40)
+header.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+header.BorderSizePixel = 0
 header.Parent = main
-Instance.new("UICorner", header).CornerRadius = UDim.new(0, 10)
+
+local headerCorner = Instance.new("UICorner")
+headerCorner.CornerRadius = UDim.new(0, 12)
+headerCorner.Parent = header
 
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, -50, 1, 0)
-title.Position = UDim2.new(0, 10, 0, 0)
+title.Size = UDim2.new(1, -90, 1, 0)
+title.Position = UDim2.new(0, 15, 0, 0)
 title.BackgroundTransparency = 1
-title.Text = "AURA V12"
+title.Text = " AURA V13"
 title.TextColor3 = Color3.fromRGB(0, 255, 200)
 title.Font = Enum.Font.GothamBold
-title.TextSize = 14
+title.TextSize = 16
+title.TextXAlignment = Enum.TextXAlignment.Left
 title.Parent = header
+
+-- BOUTON FERMER (X)
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 35, 0, 35)
+closeBtn.Position = UDim2.new(1, -40, 0, 2)
+closeBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+closeBtn.Text = ""
+closeBtn.TextColor3 = Color3.new(1, 1, 1)
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.TextSize = 18
+closeBtn.Parent = header
+Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(1, 0)
 
 -- BOUTON MINIMIZE
 local minBtn = Instance.new("TextButton")
 minBtn.Size = UDim2.new(0, 35, 0, 35)
-minBtn.Position = UDim2.new(1, -40, 0, 0)
+minBtn.Position = UDim2.new(1, -80, 0, 2)
 minBtn.BackgroundTransparency = 1
-minBtn.Text = "-"
+minBtn.Text = "−"
 minBtn.TextColor3 = Color3.fromRGB(150, 150, 160)
 minBtn.Font = Enum.Font.GothamBold
-minBtn.TextSize = 18
+minBtn.TextSize = 20
 minBtn.Parent = header
 
-print("2. GUI OK")
+print("1. Interface créée")
+
+-- CONTENU
+local content = Instance.new("Frame")content.Size = UDim2.new(1, 0, 1, -40)
+content.Position = UDim2.new(0, 0, 0, 40)
+content.BackgroundTransparency = 1
+content.Parent = main
+
 -- BOUTON TOGGLE
 local toggleBtn = Instance.new("TextButton")
-toggleBtn.Size = UDim2.new(0.9, 0, 0, 40)
-toggleBtn.Position = UDim2.new(0.05, 0, 0, 45)
-toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-toggleBtn.Text = "ACTIVER"
+toggleBtn.Size = UDim2.new(0.9, 0, 0, 45)
+toggleBtn.Position = UDim2.new(0.05, 0, 0, 10)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+toggleBtn.Text = "ACTIVER L'AURA"
 toggleBtn.TextColor3 = Color3.new(1, 1, 1)
 toggleBtn.Font = Enum.Font.GothamBold
 toggleBtn.TextSize = 14
-toggleBtn.Parent = main
+toggleBtn.Parent = content
 Instance.new("UICorner", toggleBtn).CornerRadius = UDim.new(0, 8)
+
+local toggleStroke = Instance.new("UIStroke")
+toggleStroke.Color = Color3.fromRGB(80, 80, 100)
+toggleStroke.Thickness = 1
+toggleStroke.Parent = toggleBtn
 
 -- BOUTONS ELEMENTS
 local fireBtn = Instance.new("TextButton")
-fireBtn.Size = UDim2.new(0.22, 0, 0, 35)
-fireBtn.Position = UDim2.new(0.05, 0, 0, 95)
+fireBtn.Size = UDim2.new(0.22, 0, 0, 40)
+fireBtn.Position = UDim2.new(0.05, 0, 0, 65)
 fireBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 0)
 fireBtn.Text = "FEU"
 fireBtn.TextColor3 = Color3.new(1, 1, 1)
 fireBtn.Font = Enum.Font.GothamBold
-fireBtn.TextSize = 11
-fireBtn.Parent = main
+fireBtn.TextSize = 12
+fireBtn.Parent = content
 Instance.new("UICorner", fireBtn).CornerRadius = UDim.new(0, 6)
 
 local iceBtn = Instance.new("TextButton")
-iceBtn.Size = UDim2.new(0.22, 0, 0, 35)
-iceBtn.Position = UDim2.new(0.29, 0, 0, 95)
-iceBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+iceBtn.Size = UDim2.new(0.22, 0, 0, 40)
+iceBtn.Position = UDim2.new(0.29, 0, 0, 65)
+iceBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
 iceBtn.Text = "GLACE"
 iceBtn.TextColor3 = Color3.new(1, 1, 1)
 iceBtn.Font = Enum.Font.GothamBold
-iceBtn.TextSize = 11
-iceBtn.Parent = main
+iceBtn.TextSize = 12
+iceBtn.Parent = content
 Instance.new("UICorner", iceBtn).CornerRadius = UDim.new(0, 6)
 
 local voidBtn = Instance.new("TextButton")
-voidBtn.Size = UDim2.new(0.22, 0, 0, 35)
-voidBtn.Position = UDim2.new(0.53, 0, 0, 95)
-voidBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-voidBtn.Text = "VIDE"
-voidBtn.TextColor3 = Color3.new(1, 1, 1)
+voidBtn.Size = UDim2.new(0.22, 0, 0, 40)
+voidBtn.Position = UDim2.new(0.53, 0, 0, 65)
+voidBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+voidBtn.Text = "VIDE"voidBtn.TextColor3 = Color3.new(1, 1, 1)
 voidBtn.Font = Enum.Font.GothamBold
-voidBtn.TextSize = 11
-voidBtn.Parent = main
+voidBtn.TextSize = 12
+voidBtn.Parent = content
 Instance.new("UICorner", voidBtn).CornerRadius = UDim.new(0, 6)
 
 local goldBtn = Instance.new("TextButton")
-goldBtn.Size = UDim2.new(0.22, 0, 0, 35)
-goldBtn.Position = UDim2.new(0.77, 0, 0, 95)goldBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+goldBtn.Size = UDim2.new(0.22, 0, 0, 40)
+goldBtn.Position = UDim2.new(0.77, 0, 0, 65)
+goldBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
 goldBtn.Text = "OR"
 goldBtn.TextColor3 = Color3.new(1, 1, 1)
 goldBtn.Font = Enum.Font.GothamBold
-goldBtn.TextSize = 11
-goldBtn.Parent = main
+goldBtn.TextSize = 12
+goldBtn.Parent = content
 Instance.new("UICorner", goldBtn).CornerRadius = UDim.new(0, 6)
 
+-- LABEL STATUT
 local status = Instance.new("TextLabel")
-status.Size = UDim2.new(1, 0, 0, 20)
-status.Position = UDim2.new(0, 0, 1, -20)
+status.Size = UDim2.new(1, 0, 0, 25)
+status.Position = UDim2.new(0, 0, 1, -25)
 status.BackgroundTransparency = 1
 status.Text = "CHARGEMENT..."
 status.TextColor3 = Color3.fromRGB(255, 200, 0)
 status.Font = Enum.Font.GothamBold
-status.TextSize = 10
+status.TextSize = 11
 status.Parent = main
 
-print("3. Interface complète")
+print("2. Boutons créés")
 
 -- VARIABLES
 local active = false
@@ -124,50 +183,24 @@ local minimized = false
 local character, rootPart
 local particleEmitter, pointLight
 
--- CONFIGURATIONS ELEMENTS
+-- CONFIG ELEMENTS
 local elements = {
-    Fire = {
-        color = ColorSequence.new(Color3.fromRGB(255, 50, 0), Color3.fromRGB(255, 200, 0)),
-        lightColor = Color3.fromRGB(255, 100, 0),
-        rate = 200
-    },
-    Ice = {
-        color = ColorSequence.new(Color3.fromRGB(100, 200, 255), Color3.fromRGB(255, 255, 255)),
-        lightColor = Color3.fromRGB(100, 200, 255),
-        rate = 150
-    },
-    Void = {
-        color = ColorSequence.new(Color3.fromRGB(100, 0, 200), Color3.fromRGB(200, 0, 255)),
-        lightColor = Color3.fromRGB(150, 0, 255),
-        rate = 180
-    },
-    Gold = {
-        color = ColorSequence.new(Color3.fromRGB(255, 215, 0), Color3.fromRGB(255, 255, 200)),
-        lightColor = Color3.fromRGB(255, 200, 50),
-        rate = 160
-    }
+    Fire = {color = ColorSequence.new(Color3.fromRGB(255, 50, 0), Color3.fromRGB(255, 200, 0)), lightColor = Color3.fromRGB(255, 100, 0), rate = 200},
+    Ice = {color = ColorSequence.new(Color3.fromRGB(100, 200, 255), Color3.fromRGB(255, 255, 255)), lightColor = Color3.fromRGB(100, 200, 255), rate = 150},
+    Void = {color = ColorSequence.new(Color3.fromRGB(100, 0, 200), Color3.fromRGB(200, 0, 255)), lightColor = Color3.fromRGB(150, 0, 255), rate = 180},
+    Gold = {color = ColorSequence.new(Color3.fromRGB(255, 215, 0), Color3.fromRGB(255, 255, 200)), lightColor = Color3.fromRGB(255, 200, 50), rate = 160}
 }
--- FONCTION ATTACHER EFFETS
+
+-- ATTACHER EFFETS
 local function attachEffects()
     character = player.Character
-    if not character then
-        status.Text = "ERREUR: Pas de character"
-        status.TextColor3 = Color3.fromRGB(255, 0, 0)
-        return false
-    end
+    if not character then return false end
+        rootPart = character:FindFirstChild("HumanoidRootPart")
+    if not rootPart then return false end
     
-    rootPart = character:FindFirstChild("HumanoidRootPart")
-    if not rootPart then
-        status.Text = "ERREUR: Pas de HumanoidRootPart"
-        status.TextColor3 = Color3.fromRGB(255, 0, 0)
-        return false
-    end
-    
-    -- Nettoyer
     if particleEmitter then particleEmitter:Destroy() end
     if pointLight then pointLight:Destroy() end
     
-    -- Lumière
     pointLight = Instance.new("PointLight")
     pointLight.Range = 30
     pointLight.Brightness = 3
@@ -175,12 +208,9 @@ local function attachEffects()
     pointLight.Enabled = active
     pointLight.Parent = rootPart
     
-    -- Attachment
     local attachment = Instance.new("Attachment")
-    attachment.Name = "AuraAttachment"
     attachment.Parent = rootPart
     
-    -- Particules
     particleEmitter = Instance.new("ParticleEmitter")
     particleEmitter.Texture = "rbxassetid://241876428"
     particleEmitter.Rate = active and elements[currentElement].rate or 0
@@ -195,11 +225,10 @@ local function attachEffects()
     particleEmitter.Parent = attachment
     
     status.Text = "PRET - " .. currentElement
-    status.TextColor3 = Color3.fromRGB(0, 255, 100)    print("Effets attachés à " .. rootPart.Name)
+    status.TextColor3 = Color3.fromRGB(0, 255, 100)
     return true
 end
 
--- RESPAWN HANDLER
 local function onCharacterAdded(char)
     task.wait(1)
     attachEffects()
@@ -211,20 +240,60 @@ if player.Character then
     attachEffects()
 end
 
+print("3. Effets prêts")
+
+-- SYSTEME DRAG
+local dragging = false
+local dragStart, startPos
+header.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = main.Position
+    end
+end)
+
+header.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStart
+        main.Position = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+-- FERMER
+closeBtn.MouseButton1Click:Connect(function()
+    main.Visible = false
+    reopenBtn.Visible = true
+end)
+
+-- REOUVRIR
+reopenBtn.MouseButton1Click:Connect(function()
+    main.Visible = true
+    reopenBtn.Visible = false
+end)
+
 -- MINIMIZE
 minBtn.MouseButton1Click:Connect(function()
     minimized = not minimized
     if minimized then
-        TweenService:Create(main, TweenInfo.new(0.3), {Size = UDim2.new(0, 250, 0, 35)}):Play()
+        TweenService:Create(main, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {Size = UDim2.new(0, 280, 0, 40)}):Play()
         minBtn.Text = "+"
     else
-        TweenService:Create(main, TweenInfo.new(0.3), {Size = UDim2.new(0, 250, 0, 220)}):Play()
-        minBtn.Text = "-"
+        TweenService:Create(main, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {Size = UDim2.new(0, 280, 0, 240)}):Play()
+        minBtn.Text = "−"
     end
 end)
 
--- TOGGLE
-toggleBtn.MouseButton1Click:Connect(function()
+-- TOGGLEtoggleBtn.MouseButton1Click:Connect(function()
     if not particleEmitter or not pointLight then
         status.Text = "ERREUR: Effets non attachés"
         status.TextColor3 = Color3.fromRGB(255, 0, 0)
@@ -234,30 +303,33 @@ toggleBtn.MouseButton1Click:Connect(function()
     active = not active
     
     if active then
-        toggleBtn.Text = "DESACTIVER"
-        toggleBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
+        toggleBtn.Text = "DÉSACTIVER"
+        toggleBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 150)
+        toggleBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+        toggleStroke.Color = Color3.fromRGB(0, 255, 150)
         particleEmitter.Rate = elements[currentElement].rate
         pointLight.Enabled = true
-        status.Text = "ACTIVE - " .. currentElement
+        status.Text = "⚡ ACTIVE - " .. currentElement
     else
         toggleBtn.Text = "ACTIVER"
-        toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+        toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+        toggleBtn.TextColor3 = Color3.new(1, 1, 1)
+        toggleStroke.Color = Color3.fromRGB(80, 80, 100)
         particleEmitter.Rate = 0
         pointLight.Enabled = false
-        status.Text = "INACTIVE"    end
+        status.Text = "INACTIVE"
+    end
 end)
 
--- FONCTION CHANGER ELEMENT
+-- CHANGER ELEMENT
 local function changeElement(elementName)
     currentElement = elementName
     
-    -- Reset couleurs boutons
-    fireBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-    iceBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-    voidBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-    goldBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+    fireBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+    iceBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+    voidBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+    goldBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
     
-    -- Activer bouton sélectionné
     if elementName == "Fire" then
         fireBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 0)
     elseif elementName == "Ice" then
@@ -268,25 +340,20 @@ local function changeElement(elementName)
         goldBtn.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
     end
     
-    -- Appliquer aux effets
     if particleEmitter then
         particleEmitter.Color = elements[elementName].color
-        if active then
-            particleEmitter.Rate = elements[elementName].rate
-        end
-    end
+        if active then particleEmitter.Rate = elements[elementName].rate end    end
     
     if pointLight then
         pointLight.Color = elements[elementName].lightColor
     end
     
-    status.Text = (active and "ACTIVE" or "INACTIVE") .. " - " .. elementName
+    status.Text = (active and "⚡ ACTIVE" or "INACTIVE") .. " - " .. elementName
 end
 
--- CONNEXIONS BOUTONS
 fireBtn.MouseButton1Click:Connect(function() changeElement("Fire") end)
 iceBtn.MouseButton1Click:Connect(function() changeElement("Ice") end)
 voidBtn.MouseButton1Click:Connect(function() changeElement("Void") end)
 goldBtn.MouseButton1Click:Connect(function() changeElement("Gold") end)
 
-print("=== V12 READY ===")
+print("=== V13 READY ===")
